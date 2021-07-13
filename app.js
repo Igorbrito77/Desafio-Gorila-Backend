@@ -8,48 +8,101 @@ const neatCsv = require('neat-csv');
 app.use(cors());
 
 
-var getDaysArray = function(start, end) {
-
-    end = new Date(end)
-
-
-    for(var arr=[],dt=new Date(start); dt<=end; dt.setDate(dt.getDate()+1)){
-        let nv_data = new Date(dt);
-        arr.push(nv_data.getDate()+'/'+(nv_data.getMonth()+1)+'/'+nv_data.getFullYear());
+function __formatDateToBD(dateString) {
+    if (dateString != null && dateString != ``) {
+        var dateSplit = dateString.split(` `);
+        var day = dateSplit[0].split(`/`).reverse().join(`-`);
+        if (dateSplit.length == 2) {
+            var hour = dateSplit[1];
+            return day + ` ` + hour;
+        } else {
+            return day;
+        }
+    } else {
+        return dateString;
     }
-    return arr;
-};
+}
+
+// var getDaysArray = function(start, end) {
+
+//     start = new Date(start)
+//     end = new Date(end)
+
+//     let arr=[];
+
+//     for(let dt=start; dt<=end; dt.setDate(dt.getDate()+1)){
+//         let nv_data = new Date(dt);
+//         arr.push(nv_data.getDate()+'/'+(nv_data.getMonth()+1)+'/'+nv_data.getFullYear());
+//     }
+//     return arr;
+// };
+
+
+
+
+const getDatesBetweenDates = (startDate, endDate) => {
+    let dates = []
+
+    const theDate = new Date(startDate)
+    endDate = new Date(endDate)
+
+    while (theDate < endDate) {
+
+
+        let data_pronta = theDate.getFullYear()+'-'+(theDate.getMonth()+1);
+
+        data_pronta +=   parseInt(theDate.getDate()) < 10 ?  `-0${theDate.getDate()}` : `-${theDate.getDate()}`;
+
+        theDate.setDate(theDate.getDate() + 1)
+
+        dates.push(data_pronta)
+    }
+    return dates
+    
+  }
+  
 
 
 async function calculo_cdb(req, res){
 
     const investmentDate = '2016-11-14';
-    const currentDate = '2016-12-26';
+    const currentDate = '2016-11-20';
     const cdbRate =  103.5;
 
 
     // adicionar validação de data e conversão pra padrão
     
-    const array_datas = getDaysArray(investmentDate, currentDate);
+    const array_datas = getDatesBetweenDates(investmentDate, currentDate);
     
     const dados_cdi = await neatCsv(fs.readFileSync('./CDI_Prices.csv'))
 
     let valores_cdb = [];
 
+    let tcdi_k, tcdi_k_acumulado;
 
-    for(let data of array_datas){
+    console.log(array_datas)
 
-        // pega o valor do CDI do dia
-        let cdi_diario = dados_cdi.find( dado_cdi => {
-            return dado_cdi.dtDate === data
+
+    for (let data of array_datas){  
+
+
+        let dado_diario = dados_cdi.find( dado_cdi => {
+
+        
+            return data === __formatDateToBD(dado_cdi.dtDate);
         });
 
-        cdi_diario = cdi_diario ? cdi_diario.dtDate : null; 
+        console.log(dado_diario)
 
-        valores_cdb.push({date: data, unitPrice: cdi_diario})
+        // const cdi_diario = dado_diario ? dado_diario.dtDate : null;
+
+        if(dado_diario){
+            valores_cdb.push({date: data, data_csv: dado_diario.dtDate, unitPrice: dado_diario.dLastTradePrice})
+        }
+
+
 
     }
-
 
     res.json(valores_cdb);
 }
