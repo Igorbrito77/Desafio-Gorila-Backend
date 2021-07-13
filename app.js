@@ -14,7 +14,8 @@ var getDaysArray = function(start, end) {
 
 
     for(var arr=[],dt=new Date(start); dt<=end; dt.setDate(dt.getDate()+1)){
-        arr.push(new Date(dt));
+        let nv_data = new Date(dt);
+        arr.push(nv_data.getDate()+'/'+(nv_data.getMonth()+1)+'/'+nv_data.getFullYear());
     }
     return arr;
 };
@@ -29,20 +30,28 @@ async function calculo_cdb(req, res){
 
     // adicionar validação de data e conversão pra padrão
     
-    const array_datas = getDaysArray('2021-01-01', '2021-02-01');
-
+    const array_datas = getDaysArray(investmentDate, currentDate);
     
     const dados_cdi = await neatCsv(fs.readFileSync('./CDI_Prices.csv'))
 
-
-    // for(let data of array_datas){
-
+    let valores_cdb = [];
 
 
-    // }
+    for(let data of array_datas){
+
+        // pega o valor do CDI do dia
+        let cdi_diario = dados_cdi.find( dado_cdi => {
+            return dado_cdi.dtDate === data
+        });
+
+        cdi_diario = cdi_diario ? cdi_diario.dtDate : null; 
+
+        valores_cdb.push({date: data, unitPrice: cdi_diario})
+
+    }
 
 
-    res.json({mensagem : "Teste"});
+    res.json(valores_cdb);
 }
 
 
