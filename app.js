@@ -23,20 +23,6 @@ function __formatDateToBD(dateString) {
     }
 }
 
-// var getDaysArray = function(start, end) {
-
-//     start = new Date(start)
-//     end = new Date(end)
-
-//     let arr=[];
-
-//     for(let dt=start; dt<=end; dt.setDate(dt.getDate()+1)){
-//         let nv_data = new Date(dt);
-//         arr.push(nv_data.getDate()+'/'+(nv_data.getMonth()+1)+'/'+nv_data.getFullYear());
-//     }
-//     return arr;
-// };
-
 
 
 
@@ -93,11 +79,11 @@ async function calculo_cdb(req, res){
 
         if(dado_diario){
 
-            cdi_diario =  dado_diario.dLastTradePrice;
+            cdi_diario =  parseFloat(dado_diario.dLastTradePrice).toFixed(2);
 
-            tcdi_k=  parseFloat(Math.pow( parseFloat( parseFloat( cdi_diario/100 ) +1) , 1/252) -1);
+            tcdi_k=  parseFloat(Math.pow( parseFloat( parseFloat( cdi_diario/100 ) +1) , 1/252) -1).toFixed(8);
 
-            tcdi_k_acumulado = parseFloat( tcdi_k_acumulado *   parseFloat(1 +  parseFloat(tcdi_k * ( parseFloat(cdbRate/100) )  ) ) );
+            tcdi_k_acumulado = parseFloat( tcdi_k_acumulado *   parseFloat(1 +  parseFloat(tcdi_k * ( parseFloat(cdbRate/100) )  ) ) ).toFixed(8);
 
 
             valores_cdb.push({date: data, data_csv: dado_diario.dtDate,  cdi_diario, unitPrice : tcdi_k, tcdi_k_acumulado})
@@ -114,11 +100,7 @@ async function calculo_cdb(req, res){
 app.get('/cdb/:data', calculo_cdb);
 
 
-
-
 app.listen(3000);
-
-
 
 
 module.exports = app;
