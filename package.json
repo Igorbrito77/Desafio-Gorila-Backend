@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Igorbrito77/Desafio-Gorila-Backend#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "neat-csv": "^6.0.1"
   }
 }
