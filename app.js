@@ -78,9 +78,7 @@ async function calculo_cdb(req, res){
 
     let valores_cdb = [];
 
-
-    console.log(array_datas)
-
+    let tcdi_k_acumulado = 1;
 
     for (let data of array_datas){  
 
@@ -90,17 +88,19 @@ async function calculo_cdb(req, res){
         });
 
 
-        let cdi_diario,  tcdi_k, tcdi_k_acumulado;
+        let cdi_diario,  tcdi_k;
 
 
         if(dado_diario){
 
             cdi_diario =  dado_diario.dLastTradePrice;
 
-            tcdi_k=  parseFloat(Math.pow( parseFloat( parseFloat( cdi_diario/100 ) +1) , 1/52) -1)
+            tcdi_k=  parseFloat(Math.pow( parseFloat( parseFloat( cdi_diario/100 ) +1) , 1/252) -1);
+
+            tcdi_k_acumulado = parseFloat( tcdi_k_acumulado *   parseFloat(1 +  parseFloat(tcdi_k * ( parseFloat(cdbRate/100) )  ) ) );
 
 
-            valores_cdb.push({date: data, data_csv: dado_diario.dtDate,  cdi_diario, unitPrice : tcdi_k})
+            valores_cdb.push({date: data, data_csv: dado_diario.dtDate,  cdi_diario, unitPrice : tcdi_k, tcdi_k_acumulado})
         }
 
 
