@@ -66,7 +66,7 @@ const getDatesBetweenDates = (startDate, endDate) => {
 async function calculo_cdb(req, res){
 
     const investmentDate = '2016-11-14';
-    const currentDate = '2016-11-20';
+    const currentDate = '2016-12-26';
     const cdbRate =  103.5;
 
 
@@ -78,7 +78,6 @@ async function calculo_cdb(req, res){
 
     let valores_cdb = [];
 
-    let tcdi_k, tcdi_k_acumulado;
 
     console.log(array_datas)
 
@@ -87,17 +86,21 @@ async function calculo_cdb(req, res){
 
 
         let dado_diario = dados_cdi.find( dado_cdi => {
-
-        
             return data === __formatDateToBD(dado_cdi.dtDate);
         });
 
-        console.log(dado_diario)
 
-        // const cdi_diario = dado_diario ? dado_diario.dtDate : null;
+        let cdi_diario,  tcdi_k, tcdi_k_acumulado;
+
 
         if(dado_diario){
-            valores_cdb.push({date: data, data_csv: dado_diario.dtDate, unitPrice: dado_diario.dLastTradePrice})
+
+            cdi_diario =  dado_diario.dLastTradePrice;
+
+            tcdi_k=  parseFloat(Math.pow( parseFloat( parseFloat( cdi_diario/100 ) +1) , 1/52) -1)
+
+
+            valores_cdb.push({date: data, data_csv: dado_diario.dtDate,  cdi_diario, unitPrice : tcdi_k})
         }
 
 
