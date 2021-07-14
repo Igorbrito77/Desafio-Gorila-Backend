@@ -45,27 +45,27 @@
         "tags": [
           "User"
         ],
-        "description": "Endpoint para obter um usuário.",
+        "description": "Cáluco de CDB pós indexado ao CDI.",
         "parameters": [
           {
             "name": "investmentDate",
             "in": "query",
             "type": "string",
-            "description": "Um filtro qualquer.",
+            "description": "Data inicial do investimento.",
             "required": true
           },
           {
             "name": "currentDate",
             "in": "query",
             "type": "string",
-            "description": "Um filtro qualquer.",
+            "description": "Data atual.",
             "required": true
           },
           {
             "name": "cdbRate",
             "in": "query",
             "type": "string",
-            "description": "Um filtro qualquer.",
+            "description": "Taxa do CDB",
             "required": true
           }
         ],

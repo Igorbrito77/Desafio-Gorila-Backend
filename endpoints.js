@@ -21,25 +21,36 @@ function __formatDateToBD(dateString) {
 }
 
 
+var getDaysArray = function(start, end) {
+
+    end = new Date(end)
 
 
-const getDatesBetweenDates = (startDate, endDate) => {
-    let dates = []
+    for(dt=new Date(start); dt<=end; dt.setDate(dt.getDate()+1)){
+        let nv_data = new Date(dt);
+        arr.push(nv_data.getDate()+'/'+(nv_data.getMonth()+1)+'/'+nv_data.getFullYear());
+    }
+    return arr;
+};
 
-    const theDate = new Date(startDate)
+
+// Retorna um array contendo as datas entre a data incial do investimento e a data atual
+function getDatesBetweenDates(startDate, endDate){
+    
+    const dt = new Date(startDate)
     endDate = new Date(endDate)
 
-    while (theDate < endDate) {
+    let dates = []
+
+    while (dt < endDate) {
+
+        dates.push( dt.getFullYear()+'-'+(dt.getMonth()+1) +  ( parseInt(dt.getDate()) < 10 ?  `-0${dt.getDate()}` : `-${dt.getDate()}` ));
 
 
-        let data_pronta = theDate.getFullYear()+'-'+(theDate.getMonth()+1);
+        dt.setDate(dt.getDate() + 1)
 
-        data_pronta +=   parseInt(theDate.getDate()) < 10 ?  `-0${theDate.getDate()}` : `-${theDate.getDate()}`;
-
-        theDate.setDate(theDate.getDate() + 1)
-
-        dates.push(data_pronta)
     }
+
     return dates
     
   }
@@ -51,42 +62,42 @@ const getDatesBetweenDates = (startDate, endDate) => {
 app.get('/cdb', async (req, res) => {
         
       // #swagger.tags = ['User']
-        // #swagger.description = 'Endpoint para obter um usuário.'
+        // #swagger.description = 'Cáluco de CDB pós indexado ao CDI.'
 
         /* #swagger.parameters['investmentDate'] = {
-               description: 'Um filtro qualquer.',
+               description: 'Data inicial do investimento.',
                type: 'string',
                required: true
         } */
 
          /* #swagger.parameters['currentDate'] = {
-               description: 'Um filtro qualquer.',
+               description: 'Data atual.',
                type: 'string',
                required: true
         } */
 
         /* #swagger.parameters['cdbRate'] = {
-               description: 'Um filtro qualquer.',
+               description: 'Taxa do CDB',
                type: 'string',
                required: true
         } */
 
-   const investmentDate = req.query.investmentDate;
-   const currentDate = req.query.currentDate;
-   const cdbRate =  req.query.cdbRate;  
+   const investmentDate =   req.query.investmentDate;
+   const currentDate =      req.query.currentDate;
+   const cdbRate =          req.query.cdbRate;  
 
 
    // adicionar validação de data e conversão pra padrão
    
-   const array_datas = getDatesBetweenDates(investmentDate, currentDate);
+   const dates = getDatesBetweenDates(investmentDate, currentDate);
    
-   const dados_cdi = await neatCsv(fs.readFileSync('./CDI_Prices.csv'))
+   const dados_cdi = await neatCsv(fs.readFileSync('./CDI_Prices.csv')) // Lê o arquivo CSV da série histórica do CDI e o converte em um array de objetos 
 
    let valores_cdb = [];
 
    let tcdi_k_acumulado = 1;
 
-   for (let data of array_datas){  
+   for (let data of dates){  
 
 
        let dado_diario = dados_cdi.find( dado_cdi => {
