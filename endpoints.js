@@ -5,25 +5,26 @@ module.exports = function (app) {
 
 
 
-function __formatDateToBD(dateString) {
-    if (dateString != null && dateString != ``) {
-        var dateSplit = dateString.split(` `);
-        var day = dateSplit[0].split(`/`).reverse().join(`-`);
-        if (dateSplit.length == 2) {
-            var hour = dateSplit[1];
-            return day + ` ` + hour;
-        } else {
-            return day;
-        }
-    } else {
-        return dateString;
+function format_date(dateString) { // Converte as data do formato DD/MM/YYYYY para YYYY-MM-DD
+
+    let dateSplit = dateString.split(` `);
+
+    let day = dateSplit[0].split(`/`).reverse().join(`-`);
+    
+    if (dateSplit.length == 2) {
+        let hour = dateSplit[1];
+        return day + ` ` + hour;
+    } 
+    
+    else {
+        return day;
     }
 }
 
 
 
 // Retorna um array contendo as datas entre a data incial do investimento e a data atual
-function getDatesBetweenDates(startDate, endDate){
+function get_dates_between_dates(startDate, endDate){
     
     const dt = new Date(startDate)
     endDate = new Date(endDate)
@@ -43,38 +44,32 @@ function getDatesBetweenDates(startDate, endDate){
   }
   
 
-function calculo_cdb(cdbRate, dates, dados_cdi){
+function calculo_cdb(cdbRate, dates, cdiValuesList){
 
-    let valores_cdb = [];
+    let priceList = []; // Array de preços do CDB
+    let TCDIk_acumulado = 1.
+    let TCDIk;
+ 
+    for (let date of dates){  
+ 
+        let CDI = cdiValuesList.find( dado_cdi => { return date === format_date(dado_cdi.dtDate); }); // busca o valor do CDI na determinada data
 
-    let tcdi_k_acumulado = 1;
  
-    for (let data of dates){  
+        if(CDI){ // verifica se um valor foi encontrado  (pois só são contabilizados os dias úteis)
  
-
-        let dado_diario = dados_cdi.find( dado_cdi => {
-            return data === __formatDateToBD(dado_cdi.dtDate);
-        });
+            CDI.dLastTradePrice =  parseFloat(CDI.dLastTradePrice).toFixed(2); // fixa o valor de CDI em duas casas decimais
  
+            TCDIk=  parseFloat(Math.pow( parseFloat( parseFloat( CDI.dLastTradePrice/100 ) +1) , 1/252) -1).toFixed(8); // Calcula o TCDIk
  
-        let cdi_diario,  tcdi_k;
+            TCDIk_acumulado = parseFloat( TCDIk_acumulado *   parseFloat(1 +  parseFloat(TCDIk * ( parseFloat(cdbRate/100) )  ) ) ).toFixed(8);  // Calcula o TCDIk acumulado
  
  
-        if(dado_diario){
- 
-            cdi_diario =  parseFloat(dado_diario.dLastTradePrice).toFixed(2);
- 
-            tcdi_k=  parseFloat(Math.pow( parseFloat( parseFloat( cdi_diario/100 ) +1) , 1/252) -1).toFixed(8);
- 
-            tcdi_k_acumulado = parseFloat( tcdi_k_acumulado *   parseFloat(1 +  parseFloat(tcdi_k * ( parseFloat(cdbRate/100) )  ) ) ).toFixed(8);
- 
- 
-            valores_cdb.push({date: data, data_csv: dado_diario.dtDate,  cdi_diario, unitPrice : tcdi_k, tcdi_k_acumulado})
+            priceList.push({date, cdi: CDI.dLastTradePrice, unitPrice : TCDIk, TCDIk_acumulado})
         }
 
     }
 
-    return valores_cdb;
+    return priceList;
 }
 
 
@@ -110,12 +105,11 @@ app.get('/cdb', async (req, res) => {
 
         // adicionar validação de data e conversão pra padrão
         
-        const dates = getDatesBetweenDates( investmentDate, currentDate);
+        const dates = get_dates_between_dates( investmentDate, currentDate);
         
-        const dados_cdi = await neatCsv(fs.readFileSync('./CDI_Prices.csv')) // Lê o arquivo CSV da série histórica do CDI e o converte em um array de objetos 
-
+        const cdiValuesList = await neatCsv(fs.readFileSync('./CDI_Prices.csv')); // Lê o arquivo CSV da série histórica do CDI e o converte em um array de objetos 
                 
-        const result = calculo_cdb(cdbRate, dates, dados_cdi);
+        const result = calculo_cdb(cdbRate, dates, cdiValuesList); // Chama a função de cálculo para o preço do CDB
         
 
         return res.status(200).send(result)
