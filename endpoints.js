@@ -2,24 +2,6 @@ const fs = require('fs')
 const neatCsv = require('neat-csv');
 
 module.exports = function (app) {
-	
-    app.get('/users/:id', (req, res) => {
-        
-       // #swagger.tags = ['User']
-        // #swagger.description = 'Endpoint para obter um usuário.'
-        // #swagger.parameters['id'] = { description: 'ID do usuário.' }
-
-        /* #swagger.parameters['filtro'] = {
-               description: 'Um filtro qualquer.',
-               type: 'string'
-        } */
-
-	const filtro = req.query.filtro
-
-        return res.status(200).send(false)
-
-    })
-
 
 
 
@@ -66,22 +48,32 @@ const getDatesBetweenDates = (startDate, endDate) => {
 
 
 
-app.post('/cdb', async (req, res) => {
+app.get('/cdb', async (req, res) => {
         
-    /* #swagger.tags = ['User']
-      #swagger.description = 'Endpoint para adicionar um usuário.' */
+      // #swagger.tags = ['User']
+        // #swagger.description = 'Endpoint para obter um usuário.'
 
-   /* #swagger.parameters['newUser'] = {
-          in: 'body',
-          description: 'Informações do usuário.',
-          required: true,
-          type: 'object',
-          schema: { $ref: "#/definitions/AddUser" }
-   } */
+        /* #swagger.parameters['investmentDate'] = {
+               description: 'Um filtro qualquer.',
+               type: 'string',
+               required: true
+        } */
 
-   const investmentDate = '2016-11-14';
-   const currentDate = '2016-12-26';
-   const cdbRate =  103.5;
+         /* #swagger.parameters['currentDate'] = {
+               description: 'Um filtro qualquer.',
+               type: 'string',
+               required: true
+        } */
+
+        /* #swagger.parameters['cdbRate'] = {
+               description: 'Um filtro qualquer.',
+               type: 'string',
+               required: true
+        } */
+
+   const investmentDate = req.query.investmentDate;
+   const currentDate = req.query.currentDate;
+   const cdbRate =  req.query.cdbRate;  
 
 
    // adicionar validação de data e conversão pra padrão

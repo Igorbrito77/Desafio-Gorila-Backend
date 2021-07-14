@@ -40,7 +40,7 @@
     "application/json"
   ],
   "paths": {
-    "/users/{id}": {
+    "/cdb": {
       "get": {
         "tags": [
           "User"
@@ -48,42 +48,25 @@
         "description": "Endpoint para obter um usuário.",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "ID do usuário."
-          },
-          {
-            "name": "filtro",
+            "name": "investmentDate",
             "in": "query",
             "type": "string",
-            "description": "Um filtro qualquer."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/cdb": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "description": "Endpoint para adicionar um usuário.",
-        "parameters": [
+            "description": "Um filtro qualquer.",
+            "required": true
+          },
           {
-            "name": "newUser",
-            "in": "body",
-            "description": "Informações do usuário.",
-            "required": true,
-            "type": "object",
-            "schema": {
-              "$ref": "#/definitions/AddUser"
-            }
+            "name": "currentDate",
+            "in": "query",
+            "type": "string",
+            "description": "Um filtro qualquer.",
+            "required": true
+          },
+          {
+            "name": "cdbRate",
+            "in": "query",
+            "type": "string",
+            "description": "Um filtro qualquer.",
+            "required": true
           }
         ],
         "responses": {
