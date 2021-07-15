@@ -5,6 +5,9 @@ const moment = require('moment')
 module.exports = function (app) {
 
 
+const PRECO_UNITARIO_CDB = 1000;
+
+
 // Converte as data do formato DD/MM/YYYYY para YYYY-MM-DD
 function format_date(dateString) { 
 
@@ -67,7 +70,9 @@ function calculo_cdb(cdbRate, dates, cdiValuesList){
             TCDIk_acumulado = parseFloat( TCDIk_acumulado *   parseFloat(1 +  parseFloat(TCDIk * ( parseFloat(cdbRate/100) )  ) ) ).toFixed(8);  // Calcula o TCDIk acumulado
  
  
-            priceList.push({date, cdi: CDI.dLastTradePrice, unitPrice : TCDIk, TCDIk_acumulado})
+            // priceList.push({date, cdi: CDI.dLastTradePrice, unitPrice : TCDIk, TCDIk_acumulado}); Comentando campos inutilizados no retorno  do JSON, mas que seriam utilizados na tabela do Front-End
+            priceList.push({date, unitPrice: (TCDIk_acumulado * PRECO_UNITARIO_CDB) });
+
         }
 
     }
@@ -113,9 +118,16 @@ app.get('/cdb', async (req, res) => {
         const cdiValuesList = await neatCsv(fs.readFileSync('./CDI_Prices.csv')); // Lê o arquivo CSV da série histórica do CDI e o converte em um array de objetos 
                 
         const result = calculo_cdb(cdbRate, dates, cdiValuesList); // Chama a função de cálculo para o preço do CDB
-        
 
-        return res.status(200).send(result)
+
+        if(result.length === 0){
+            return res.status(404).send({message: 'Nenhum dado encontrado na lista de CDI no intervalo de datas informado'});
+        }
+
+        const valores = result.map( value => {return{date: value.date, unitPrice: value.unitPrice }})
+
+
+        return res.status(200).send(valores)
 
     }
 
