@@ -1,6 +1,4 @@
-# Desafio Gorila Back-End -
-
-API implementada com NodeJS, Express e Swagger
+# Desafio Gorila Back-End
 
 Etapas :
 
