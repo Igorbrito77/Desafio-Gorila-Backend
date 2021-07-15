@@ -1,0 +1,75 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Desafio - Gorila",
+    "description": "API para Cálculo do CDB."
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "CDB",
+      "description": "Endpoints"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "header"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/cdb": {
+      "get": {
+        "tags": [
+          "CDB"
+        ],
+        "description": "Cáluco de CDB pós indexado ao CDI.",
+        "parameters": [
+          {
+            "name": "investmentDate",
+            "in": "query",
+            "type": "string",
+            "description": "Data inicial do investimento.",
+            "required": true
+          },
+          {
+            "name": "currentDate",
+            "in": "query",
+            "type": "string",
+            "description": "Data atual.",
+            "required": true
+          },
+          {
+            "name": "cdbRate",
+            "in": "query",
+            "type": "string",
+            "description": "Taxa do CDB",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {}
+}
