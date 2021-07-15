@@ -1,11 +1,12 @@
 const fs = require('fs')
 const neatCsv = require('neat-csv');
+const moment = require('moment')
 
 module.exports = function (app) {
 
 
-
-function format_date(dateString) { // Converte as data do formato DD/MM/YYYYY para YYYY-MM-DD
+// Converte as data do formato DD/MM/YYYYY para YYYY-MM-DD
+function format_date(dateString) { 
 
     let dateSplit = dateString.split(` `);
 
@@ -29,11 +30,12 @@ function get_dates_between_dates(startDate, endDate){
     const dt = new Date(startDate)
     endDate = new Date(endDate)
 
+
     let dates = []
 
     while (dt < endDate) {
 
-        dates.push( dt.getFullYear()+'-'+(dt.getMonth()+1) +  ( parseInt(dt.getDate()) < 10 ?  `-0${dt.getDate()}` : `-${dt.getDate()}` ));
+        dates.push(moment(dt).format('YYYY-MM-DD'));
 
         dt.setDate(dt.getDate() + 1)
 
@@ -44,6 +46,7 @@ function get_dates_between_dates(startDate, endDate){
   }
   
 
+// Efetua o cálculo do CDB
 function calculo_cdb(cdbRate, dates, cdiValuesList){
 
     let priceList = []; // Array de preços do CDB
