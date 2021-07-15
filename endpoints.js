@@ -80,7 +80,7 @@ app.get('/cdb', async (req, res) => {
         
     try{
 
-      // #swagger.tags = ['User']
+      // #swagger.tags = ['CDB']
         // #swagger.description = 'Cáluco de CDB pós indexado ao CDI.'
 
         /* #swagger.parameters['investmentDate'] = {
@@ -96,7 +96,7 @@ app.get('/cdb', async (req, res) => {
         } */
 
         /* #swagger.parameters['cdbRate'] = {
-               description: 'Taxa do CDB',
+               description: 'Taxa do CDB.',
                type: 'string',
                required: true
         } */
