@@ -81,12 +81,12 @@ function calculo_cdb(cdbRate, dates, cdiValuesList){
 }
 
 
-app.get('/cdb', async (req, res) => {
+app.get('/cdb', async (req, res) => { // talvez mudar para POST depois
         
     try{
 
       // #swagger.tags = ['CDB']
-        // #swagger.description = 'Cáluco de CDB pós indexado ao CDI.'
+        // #swagger.description = 'Cálculo de CDB pós indexado ao CDI.'
 
         /* #swagger.parameters['investmentDate'] = {
                description: 'Data inicial do investimento.',
@@ -102,7 +102,8 @@ app.get('/cdb', async (req, res) => {
 
         /* #swagger.parameters['cdbRate'] = {
                description: 'Taxa do CDB.',
-               type: 'string',
+               type: 'number',
+               format: 'double',
                required: true
         } */
 
@@ -111,7 +112,7 @@ app.get('/cdb', async (req, res) => {
         const cdbRate =          req.query.cdbRate;  
 
 
-        // adicionar validação de data e conversão pra padrão
+        // adicionar validação de data e conversão para formato padrão (YYYY-MM-DD)
         
         const dates = get_dates_between_dates( investmentDate, currentDate);
         
@@ -124,10 +125,8 @@ app.get('/cdb', async (req, res) => {
             return res.status(404).send({message: 'Nenhum dado encontrado na lista de CDI no intervalo de datas informado'});
         }
 
-        const valores = result.map( value => {return{date: value.date, unitPrice: value.unitPrice }})
 
-
-        return res.status(200).send(valores)
+        return res.status(200).send(result)
 
     }
 

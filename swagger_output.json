@@ -2,8 +2,8 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "Desafio - Gorila",
-    "description": "API para Cálculo do CDB."
+    "title": "CDB API",
+    "description": "API para Cálculo do CDB - Desafio Gorila"
   },
   "host": "localhost:3000",
   "basePath": "/",
@@ -36,7 +36,7 @@
         "tags": [
           "CDB"
         ],
-        "description": "Cáluco de CDB pós indexado ao CDI.",
+        "description": "Cálculo de CDB pós indexado ao CDI.",
         "parameters": [
           {
             "name": "investmentDate",
@@ -55,14 +55,18 @@
           {
             "name": "cdbRate",
             "in": "query",
-            "type": "string",
-            "description": "Taxa do CDB",
+            "type": "number",
+            "description": "Taxa do CDB.",
+            "format": "double",
             "required": true
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
