@@ -3,7 +3,7 @@ const neatCsv = require('neat-csv');
 const moment = require('moment')
 
 module.exports = function (app) {
-
+ 
 
 const PRECO_UNITARIO_CDB = 1000;
 
